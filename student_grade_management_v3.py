@@ -19,7 +19,6 @@
 
 class Student:
     def __init__(self, number, name, eng, c_lang, python):
-        # 학생 정보를 초기화하는 생성자
         self.number = number  # 학번
         self.name = name  # 이름
         self.eng = eng  # 영어 성적
@@ -31,15 +30,12 @@ class Student:
         self.rank = 0  # 등수 (초기값은 0)
 
     def calculate_total(self):
-        # 총점 계산 함수
-        return self.eng + self.c_lang + self.python  # 세 과목의 점수를 더함
+        return self.eng + self.c_lang + self.python  # 총점 계산
 
     def calculate_average(self):
-        # 평균 계산 함수
-        return self.total / 3  # 총점을 3으로 나누어 평균을 계산
+        return self.total / 3  # 평균 계산
 
     def assign_grade(self):
-        # 평균에 따라 학점 부여 함수
         if self.average >= 95:
             return 'A+'  # 평균이 95 이상이면 A+
         elif self.average >= 90:
@@ -61,29 +57,24 @@ class Student:
 
 class GradeManagement:
     def __init__(self):
-        # 학생들을 관리하는 클래스의 생성자
         self.students = []  # 학생들을 저장할 리스트
         self.max_students = 5  # 최대 학생 수는 5명으로 제한
 
     def add_student(self):
-        # 학생 정보를 입력하는 함수
         if len(self.students) >= self.max_students:
             print("학생 수 초과")  # 학생 수가 초과되면 오류 메시지 출력
             return
 
-        # 사용자로부터 학생 정보 입력
         number = input('학번: ')
         name = input('이름: ')
         eng = self.get_score('영어')  # 영어 점수 입력
         c_lang = self.get_score('C-언어')  # C-언어 점수 입력
         python = self.get_score('파이썬')  # 파이썬 점수 입력
 
-        # 새로운 학생 객체 생성 후 리스트에 추가
         student = Student(number, name, eng, c_lang, python)
         self.students.append(student)
 
     def delete_student(self):
-        # 학생 정보를 삭제하는 함수
         num = input('삭제할 학번 입력: ')  # 삭제할 학생의 학번 입력
         for student in self.students:
             if student.number == num:
@@ -93,7 +84,6 @@ class GradeManagement:
         print('삭제할 학생이 없습니다.')  # 해당 학번이 리스트에 없으면 오류 메시지 출력
 
     def get_score(self, subject):
-        # 각 과목의 성적을 입력 받는 함수
         while True:
             score = input(f'{subject} : ')  # 성적 입력
             if not score.isdigit():
@@ -108,33 +98,37 @@ class GradeManagement:
                 print(" 점수는 0에서 100 사이여야 합니다.")  # 성적이 0~100이 아니면 오류 메시지 출력
 
     def rank_students(self):
-        # 학생들의 성적을 기준으로 등수를 계산하는 함수
-        self.students.sort(key=lambda x: x.average, reverse=True)  # 평균을 기준으로 내림차순 정렬
-        for i, student in enumerate(self.students):
-            student.rank = i + 1  # 정렬 후 학생의 등수 부여
+        # 학생들의 성적을 기준으로 내림차순 정렬
+        self.students.sort(key=lambda x: x.average, reverse=True)
+
+        rank = 1  # 첫 번째 학생은 1등
+        for i in range(len(self.students)):
+            if i > 0 and self.students[i].average == self.students[i - 1].average:
+                # 이전 학생과 성적이 동일하면 동일한 등수 부여
+                self.students[i].rank = self.students[i - 1].rank
+            else:
+                # 성적이 다르면 현재 학생에 대해 새로운 등수 부여
+                self.students[i].rank = rank
+            
+            rank += 1  # 다음 등수로 이동
 
     def count_students_above_80(self):
-        # 80점 이상인 학생 수를 계산하는 함수
-        return sum(1 for student in self.students if student.average >= 80)  # 평균이 80 이상인 학생을 세어 반환
+        return sum(1 for student in self.students if student.average >= 80)  # 평균 80 이상 학생 수
 
     def display_results(self):
-        # 성적 처리 결과를 출력하는 함수
         print("성적관리프로그램".center(50))  # 제목 출력
         print('=' * 80)  # 구분선 출력
         print('{:<15}{:<13}{:<5}{:<5}{:<5}{:<5}{:<5}{:<5}{:<5}'.format('학번', '이름', '영어', 'C-언어', '파이썬', '총점', '평균', '학점', '등수'))  # 헤더 출력
         print('=' * 80)  # 구분선 출력
 
-        # 각 학생의 성적 출력
         for student in self.students:
             print(f"{student.number:<15} {student.name:<15} {student.eng:<7} {student.c_lang:<7} {student.python:<7} "
-                  f"{student.total:<7} {student.average:<7.2f} {student.grade:<7} {student.rank:<7}")
+                  f"{student.total:<7} {student.average:<7.2f} {student.grade:<7} {student.rank:<7}")  # 성적 출력
 
-        # 80점 이상 학생 수 출력
-        print(f'80점 이상 학생 수: {self.count_students_above_80()}')
+        print(f'80점 이상 학생 수: {self.count_students_above_80()}')  # 80점 이상 학생 수 출력
         print('성적 처리 결과 계산 완료')
 
     def menu(self):
-        # 메뉴 출력 함수
         print('1. 학생 정보 입력')
         print('2. 학생 정보 삭제')
         print('3. 성적 처리 결과 계산')
@@ -149,7 +143,6 @@ class GradeManagement:
                 print("숫자를 입력하세요.")  # 숫자가 아닌 값을 입력 시 오류 메시지 출력
 
 def main():
-    # 메인 함수
     grade_management = GradeManagement()  # 성적 관리 객체 생성
 
     while True:
